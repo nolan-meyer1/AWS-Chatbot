@@ -26,8 +26,11 @@ def lambda_handler(event, context):
     table_name = "Missed-Utterance"
     table = dynamodb.Table(table_name)
 
-    #Puts the item in the the tabel
-    table.put_item(Item = {"timeStamp": timeStamp, "utterance": missedUtterance})
+    #Puts the item in the the tabel if it's not already in the table
+    keyValues = table.get_item(Key ={"utterance": missedUtterance})
+
+    if "Item" not in keyValues:
+        table.put_item(Item = {"utterance": missedUtterance, "timeStamp": timeStamp})
     
     
     #Response that is returned to the user
