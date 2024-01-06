@@ -1,9 +1,9 @@
 import json
 import boto3
-import time
+from datetime import datetime
 """
 Lambda function that logs missed utterances
-to a DynamoDB database
+to a DynamoDB database. 
 
 Nolan Meyer
 
@@ -19,7 +19,7 @@ def lambda_handler(event, context):
 
     #Missed utterance and Time Stamp
     missedUtterance = event["inputTranscript"]
-    timeStamp = str(time.time())
+    timeStamp = str(datetime.now())
 
     #Create a dynamoDB client
     dynamodb = boto3.resource("dynamodb")
