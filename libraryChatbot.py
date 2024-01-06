@@ -32,26 +32,52 @@ def lambda_handler(event, context):
     if "Item" not in keyValues:
         table.put_item(Item = {"utterance": missedUtterance, "timeStamp": timeStamp})
 
-        #Response returned if the message hasn't been logged before
-        return {
-            "sessionState": {
-                "dialogAction": {
-                    "type": "Close"
-                },
-                "intent": {
-                    "name": intent,
-                    "slots": slots,
-                    "state": "Fulfilled"
-                }
+        #Checks if the content is negative
+        if event["interpretations"][0]["sentimentResponse"]["sentiment"] == "NEGATIVE":
 
-            },
-            "messages": [
-                {
-                    "contentType": "PlainText",
-                    "content": "Sorry I don't know the anwser to that yet! Please try rephrasing your sentence or emailing a librarian at https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
-                }
-            ]
-        }
+            #Response returned if the content is negative
+            return {
+                "sessionState": {
+                    "dialogAction": {
+                        "type": "Close"
+                    },
+                    "intent": {
+                        "name": intent,
+                        "slots": slots,
+                        "state": "Fulfilled"
+                    }
+
+                },
+                "messages": [
+                    {
+                        "contentType": "PlainText",
+                        "content": "Please refrain from using inapropraite language. Everything is logged and will be reported automatically if necessary."
+                    }
+                ]
+            }
+
+        else:
+
+            #Response returned if the message hasn't been logged before
+            return {
+                "sessionState": {
+                    "dialogAction": {
+                        "type": "Close"
+                    },
+                    "intent": {
+                        "name": intent,
+                        "slots": slots,
+                        "state": "Fulfilled"
+                    }
+
+                },
+                "messages": [
+                    {
+                        "contentType": "PlainText",
+                        "content": "Sorry I don't know the anwser to that yet! Please try rephrasing your sentence or emailing a librarian at https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
+                    }
+                ]
+            }
 
     #Response returned to the user if the utterance has already been logged before. 
     else:
