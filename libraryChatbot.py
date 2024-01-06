@@ -31,10 +31,9 @@ def lambda_handler(event, context):
 
     if "Item" not in keyValues:
         table.put_item(Item = {"utterance": missedUtterance, "timeStamp": timeStamp})
-    
-    
-    #Response that is returned to the user
-    return {
+
+        #Response returned if the message hasn't been logged before
+        return {
             "sessionState": {
                 "dialogAction": {
                     "type": "Close"
@@ -50,6 +49,29 @@ def lambda_handler(event, context):
                 {
                     "contentType": "PlainText",
                     "content": "Sorry I don't know the anwser to that yet! Please try rephrasing your sentence or emailing a librarian at https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
+                }
+            ]
+        }
+
+    #Response returned to the user if the utterance has already been logged before. 
+    else:
+
+        return {
+            "sessionState": {
+                "dialogAction": {
+                    "type": "Close"
+                },
+                "intent": {
+                    "name": intent,
+                    "slots": slots,
+                    "state": "Fulfilled"
+                }
+
+            },
+            "messages": [
+                {
+                    "contentType": "PlainText",
+                    "content": "Hmmmmm. This is a frequently asked question I don't know the answer to yet. I will learn this soon! If you have any other questions email a librarian here https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
                 }
             ]
         }
