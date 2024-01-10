@@ -34,6 +34,11 @@ def lambda_handler(event, context):
 
         #Checks if the content is negative
         if event["interpretations"][0]["sentimentResponse"]["sentiment"] == "NEGATIVE":
+            
+            #Creates a client and pushes out a notification to a cell phone notifiying a person of the negative comment
+            client = boto3.client("sns")
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}' as inapropraite.")
+            
 
             #Response returned if the content is negative
             return {
