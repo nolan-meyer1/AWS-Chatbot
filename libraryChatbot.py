@@ -1,6 +1,7 @@
 import json
 import boto3
 from datetime import datetime
+import getpass
 """
 Lambda function that logs missed utterances
 to a DynamoDB database. 
@@ -17,9 +18,10 @@ def lambda_handler(event, context):
     slots = event['sessionState']['intent']['slots']
     intent = event['sessionState']['intent']['name']
 
-    #Missed utterance and Time Stamp
+    #Missed utterance, Time Stamp, User name
     missedUtterance = event["inputTranscript"]
     timeStamp = str(datetime.now())
+    userName = getpass.getuser()
 
     #Create a dynamoDB client
     dynamodb = boto3.resource("dynamodb")
@@ -30,15 +32,14 @@ def lambda_handler(event, context):
     keyValues = table.get_item(Key ={"utterance": missedUtterance})
 
     if "Item" not in keyValues:
-        table.put_item(Item = {"utterance": missedUtterance, "timeStamp": timeStamp})
+        table.put_item(Item = {"utterance": missedUtterance, "timeStamp": timeStamp, "userName": userName})
 
         #Checks if the content is negative
         if event["interpretations"][0]["sentimentResponse"]["sentiment"] == "NEGATIVE":
             
-            #Creates a client and pushes out a notification to a cell phone notifiying a person of the negative comment
+            #Creates a client and pushes out a notification to a topic that contains emails
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}' as inapropraite.")
-            
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}' as inapropraite at {timeStamp}. The user name recorded was '{userName}'.")
 
             #Response returned if the content is negative
             return {
@@ -63,7 +64,7 @@ def lambda_handler(event, context):
 
         else:
 
-            #Response returned if the message hasn't been logged before
+            #Response returned if the message hasn't been logged before and the response isn't negative
             return {
                 "sessionState": {
                     "dialogAction": {
