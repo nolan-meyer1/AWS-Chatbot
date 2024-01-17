@@ -4,7 +4,11 @@ from datetime import datetime
 import getpass
 """
 Lambda function that logs missed utterances
-to a DynamoDB database. 
+to a DynamoDB database. It logs the missed 
+utterance, timestamp, and user name. It also
+has content filtration that sends an email with
+the inapropriate response, timestamp, and user name to
+whoever would like to monitor the application. 
 
 Nolan Meyer
 
@@ -39,7 +43,7 @@ def lambda_handler(event, context):
             
             #Creates a client and pushes out a notification to a topic that contains emails
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}' as inapropraite at {timeStamp}. The user name recorded was '{userName}'.")
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
 
             #Response returned if the content is negative
             return {
