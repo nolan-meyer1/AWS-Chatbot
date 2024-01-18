@@ -89,25 +89,53 @@ def lambda_handler(event, context):
                 ]
             }
 
-    #Response returned to the user if the utterance has already been logged before. 
+    #Response returned to the user if the utterance has already been logged before. Also checks if it is negative. 
     else:
 
-        return {
-            "sessionState": {
-                "dialogAction": {
-                    "type": "Close"
-                },
-                "intent": {
-                    "name": intent,
-                    "slots": slots,
-                    "state": "Fulfilled"
-                }
+        if event["interpretations"][0]["sentimentResponse"]["sentiment"] == "NEGATIVE":
 
-            },
-            "messages": [
-                {
-                    "contentType": "PlainText",
-                    "content": "Hmmmmm. This is a frequently asked question I don't know the answer to yet. I will learn this soon! If you have any other questions email a librarian here https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
-                }
-            ]
-        }
+            #Sends out a notification
+            client = boto3.client("sns")
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
+
+            return {
+                "sessionState": {
+                    "dialogAction": {
+                        "type": "Close"
+                    },
+                    "intent": {
+                        "name": intent,
+                        "slots": slots,
+                        "state": "Fulfilled"
+                    }
+
+                },
+                "messages": [
+                    {
+                        "contentType": "PlainText",
+                        "content": "Please refrain from using inapropraite language. Everything is logged and will be reported automatically if necessary."
+                    }
+                ]
+            }
+
+        else:
+
+            return {
+                "sessionState": {
+                    "dialogAction": {
+                        "type": "Close"
+                    },
+                    "intent": {
+                        "name": intent,
+                        "slots": slots,
+                        "state": "Fulfilled"
+                    }
+
+                },
+                "messages": [
+                    {
+                        "contentType": "PlainText",
+                        "content": "Hmmmmm. This is a frequently asked question I don't know the answer to yet. I will learn this soon! If you have any other questions email a librarian here https://lib.bsu.edu/forms/emailalibrarian.php . You can also visit the Library help desk!"
+                    }
+                ]
+            }
