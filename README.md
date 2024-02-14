@@ -21,4 +21,4 @@ Current Features:
   12.	Has content filtration for inappropriate responses using AWS Comprehend.
   13.	Sends notifications to emails that have signed up to recieve alerts of the inapropriate responses. 
 
-Link to test out project: - https://d1a0s4pip7sn0f.cloudfront.net/index.html
+Link to test out project: - https://d264fgbdoxlnp0.cloudfront.net/index.html
