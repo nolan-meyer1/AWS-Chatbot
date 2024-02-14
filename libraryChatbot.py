@@ -61,7 +61,7 @@ def lambda_handler(event, context):
                 "messages": [
                     {
                         "contentType": "PlainText",
-                        "content": "Please refrain from using inapropraite language. Everything is logged and will be reported automatically if necessary."
+                        "content": "Please refrain from using inappropriate language. Everything is logged and will be reported automatically if necessary."
                     }
                 ]
             }
