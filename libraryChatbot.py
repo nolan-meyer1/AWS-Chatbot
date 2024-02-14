@@ -7,7 +7,7 @@ Lambda function that logs missed utterances
 to a DynamoDB database. It logs the missed 
 utterance, timestamp, and user name. It also
 has content filtration that sends an email with
-the inapropriate response, timestamp, and user name to
+the inappropriate response, timestamp, and user name to
 whoever would like to monitor the application. 
 
 Nolan Meyer
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     table_name = "Missed-Utterance"
     table = dynamodb.Table(table_name)
 
-    #Puts the item in the the tabel if it's not already in the table
+    #Puts the item in the table if it's not already in the table
     keyValues = table.get_item(Key ={"utterance": missedUtterance})
 
     if "Item" not in keyValues:
@@ -43,7 +43,7 @@ def lambda_handler(event, context):
             
             #Creates a client and pushes out a notification to a topic that contains emails
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
+            result = client.publish(TopicArn = "Left out for security reasons",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
 
             #Response returned if the content is negative
             return {
@@ -96,7 +96,7 @@ def lambda_handler(event, context):
 
             #Sends out a notification
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
+            result = client.publish(TopicArn = "Left out for security reasons",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
 
             return {
                 "sessionState": {
@@ -113,7 +113,7 @@ def lambda_handler(event, context):
                 "messages": [
                     {
                         "contentType": "PlainText",
-                        "content": "Please refrain from using inapropraite language. Everything is logged and will be reported automatically if necessary."
+                        "content": "Please refrain from using inappropriate language. Everything is logged and will be reported automatically if necessary."
                     }
                 ]
             }
