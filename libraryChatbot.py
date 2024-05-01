@@ -17,6 +17,13 @@ January 4, 2024
 
 #Lambda handler that takes in an event
 def lambda_handler(event, context):
+    """
+    This will be run every time something that is entered 
+    is not recognized. It will then go through this function that will run a 
+    sentiment analysis. If it is inapropriate it will 
+    report send out an email to the designated person, and it will 
+    log everything into a DynamoDB database.
+    """
 
     #Varaibles for crafting response
     slots = event['sessionState']['intent']['slots']
@@ -43,7 +50,7 @@ def lambda_handler(event, context):
             
             #Creates a client and pushes out a notification to a topic that contains emails
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "Left out for security reasons",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
 
             #Response returned if the content is negative
             return {
@@ -96,7 +103,7 @@ def lambda_handler(event, context):
 
             #Sends out a notification
             client = boto3.client("sns")
-            result = client.publish(TopicArn = "Left out for security reasons",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
+            result = client.publish(TopicArn = "arn:aws:sns:us-east-1:693700037996:LibraryBot",Subject = "Flagged Response", Message = f"Our systems has flagged '{missedUtterance}'. This was done at {timeStamp} by the user '{userName}'.")
 
             return {
                 "sessionState": {
